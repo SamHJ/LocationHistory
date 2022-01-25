@@ -51,3 +51,8 @@ func GetHistory(orderId string) *History {
 
 	return nil
 }
+
+//DeleteHistory func deletes a history item
+func DeleteHistory(orderId string) {
+	heap.Del(orderId)
+}

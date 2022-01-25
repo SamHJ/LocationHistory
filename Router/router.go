@@ -13,6 +13,8 @@ func SetupRoutes(app *fiber.App) {
 
 	location.Post("/:orderId/now", h.AppendLocation)
 
+	location.Delete("/:orderId", h.DeleteHistory)
+
 	//handles all undefined routes
 	app.Use(func(c *fiber.Ctx) error {
 		return h.HomePage(c)
