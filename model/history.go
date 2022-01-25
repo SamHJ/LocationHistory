@@ -21,34 +21,37 @@ func init() {
 	heap.Path("./history/history.tsv")
 }
 
-//StoreHistory method stores history item to memory
-func (history *History) StoreHistory(orderId string) {
+//StoreHistory method stores history item to memory with time to live (ttl)
+func (history History) StoreHistory(orderId string) {
 	ttl, err := strconv.Atoi(config.Config("LOCATION_HISTORY_TTL_SECONDS"))
 	if err != nil {
-		log.Fatal("Invalid LOCATION_HISTORY_TTL_SECONDS",err)
+		log.Fatal("Invalid LOCATION_HISTORY_TTL_SECONDS", err)
 	}
 
-	heap.Set(orderId, history, int64(ttl))
+	var histories []History
 
-	heap.Support(History{})
+	oldHistory := GetHistory(orderId)
+
+	if oldHistory == nil {
+		histories = append(histories, history)
+
+	} else {
+		histories = append(histories, (oldHistory.([]History))...)
+	}
+
+	heap.Set(orderId, histories, int64(ttl))
+
+	heap.Support([]History{})
 
 	heap.Save()
 }
 
 //GetHistory func retrieves a particular history item based on orderId
-func GetHistory(orderId string) *History {
-
+func GetHistory(orderId string) interface{} {
 	val, ok := heap.Get(orderId)
-
-	if ok {
-		v, k := val.(History)
-
-		if k {
-			return &v
-		}
-
+	if ok{
+		return val
 	}
-
 	return nil
 }
 

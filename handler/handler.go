@@ -30,3 +30,15 @@ func DeleteHistory(c *fiber.Ctx) error {
 	m.DeleteHistory(orderId)
 	return nil
 }
+
+//GetHistory func gets the history items based on the orderId
+func GetHistory(c *fiber.Ctx) error {
+	orderId := c.Params("orderId")
+
+	histories := m.GetHistory(orderId)
+
+	return c.Status(200).JSON(&fiber.Map{
+		"order_id":  orderId,
+		"history": histories,
+	})
+}
